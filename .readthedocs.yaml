@@ -1,22 +1,13 @@
-version: 2
+version: "2"
 
 build:
-  os: ubuntu-22.04
+  os: "ubuntu-22.04"
   tools:
     python: "3.10"
 
 python:
   install:
     - requirements: docs/requirements.txt
-    # 如果你的包需要被安装（用于 autodoc）：
-    - method: pip
-      path: .
 
 sphinx:
-  configuration: docs/conf.py
-
-# 关键：指定默认分支
-git:
-  depth: 50
-  branches:
-    - main  # 或你实际使用的默认分支名
+  configuration: docs/source/conf.py
