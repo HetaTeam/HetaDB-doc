@@ -1,4 +1,4 @@
-.. _database_installation:
+
 
 数据库安装
 ============

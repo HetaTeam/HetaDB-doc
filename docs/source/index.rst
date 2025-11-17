@@ -26,7 +26,6 @@ HetaDB的核心功能包括：
 * Mistral Large / Mixtral 8x22B / Mixtral 8x7B (Mistral AI)
 
 
-
 .. note::
 
    HetaDB是我们所研发的Heta知识库的重要组成部分，如果感兴趣的用户还可以查看Heta知识库的其他组成部分，包括: `HetaRAG <https://github.com/KnowledgeXLab/HetaRAG/>`_, HetaMeM, 和 HetaGen
@@ -35,18 +34,31 @@ Contents
 --------
 
 .. toctree::
+   :maxdepth: 2
+   :caption: 快速上手
+   :name: quick_start
 
-   usage
-   api
+   quick_start/database_Installation
+   quick_start/model_download
+   quick_start/configuration
+   quick_start/basic_usage
+   quick_start/advanced_usage
+
 
 .. toctree::
    :maxdepth: 2
-   :caption: 用户指南
-   :name: userguide
+   :caption: 文件解析
+   :name: file_parsing
 
-   quickstart
-   database_Installation
-   installation
-   configuration
-   basic_usage
-   advanced_usage
+   file_parsing/html_parsing
+   file_parsing/pdf_parsing
+   file_parsing/image_interpretation
+
+.. toctree::
+   :maxdepth: 2
+   :caption: 数据库集成
+   :name: database_integration
+
+   database_integration/html_parsing
+   database_integration/pdf_parsing
+   database_integration/image_interpretation
