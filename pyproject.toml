@@ -6,3 +6,7 @@ build-backend = "flit_core.buildapi"
 name = "lumache"
 authors = [{name = "Graziella", email = "graziella@lumache"}]
 dynamic = ["version", "description"]
+
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
