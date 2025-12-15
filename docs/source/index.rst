@@ -73,18 +73,6 @@ Contents
    db_build/_vector_db_module.rst
    db_build/_auto_schema_csv_ingestor_module.rst
 
-
-.. toctree::
-   :maxdepth: 2
-   :caption: 数据库集成
-   :name: database_integration
-
-   db_build/db_build.rst
-   db_build/_graph_db_module.rst
-   db_build/_vector_db_module.rst
-   db_build/_auto_schema_csv_ingestor_module.rst
-
-
 .. toctree::
    :maxdepth: 2
    :caption: 检索与生成
