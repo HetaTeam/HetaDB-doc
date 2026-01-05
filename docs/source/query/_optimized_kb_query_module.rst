@@ -16,19 +16,13 @@
 核心组件
 --------
 
-.. autoclass:: optimized_kb_query.ConnectionManager
+.. autoclass:: src.retrieval.kb_querier.ConnectionManager
    :members:
    :undoc-members:
 
-.. autoclass:: optimized_kb_query.OptimizedKbQuery
+.. autoclass:: src.retrieval.kb_querier.OptimizedKbQuery
    :members:
    :undoc-members:
-
-全局实例
-~~~~~~~~
-
-- ``connection_manager``：全局连接管理器（单例）
-- ``optimized_kb_query``：全局查询服务实例
 
 连接管理器（ConnectionManager）
 ------------------------------
@@ -43,12 +37,12 @@
 
 **关键方法**：
 
-- ``get_kg_collection(kb_id)``：获取知识图谱 Collection（自动加载）；
-- ``get_chunk_collection(kb_id)``：获取文本块 Collection；
+- ``get_kg_collection(dataset)``：获取知识图谱 Collection（自动加载）；
+- ``get_chunk_collection(dataset)``：获取文本块 Collection；
 - ``get_embedding(prompt)``：获取文本嵌入向量；
-- ``get_postgres_connection(kb_id)``：上下文管理器，安全获取 DB 连接。
+- ``get_postgres_connection(dataset)``：上下文管理器，安全获取 DB 连接。
 
-> **设计亮点**：Collection 实例缓存（以 ``(kb_id, name)`` 为键），避免重复加载。
+> **设计亮点**：Collection 实例缓存（以 ``(dataset, name)`` 为键），避免重复加载。
 
 查询服务（OptimizedKbQuery）
 ---------------------------
@@ -69,13 +63,13 @@
 
 ### 核心方法说明
 
-.. automethod:: optimized_kb_query.OptimizedKbQuery.get_top_similar_chunks
+.. automethod:: src.retrieval.kb_querier.OptimizedKbQuery.get_top_similar_chunks
 
-.. automethod:: optimized_kb_query.OptimizedKbQuery.query_kg_source
+.. automethod:: src.retrieval.kb_querier.OptimizedKbQuery.query_kg_source
 
-.. automethod:: optimized_kb_query.OptimizedKbQuery.query_by_res_batch_optimized
+.. automethod:: src.retrieval.kb_querier.OptimizedKbQuery.query_by_res_batch_optimized
 
-.. automethod:: optimized_kb_query.OptimizedKbQuery.query_chunks_by_ids_batch
+.. automethod:: src.retrieval.kb_querier.OptimizedKbQuery.query_chunks_by_ids_batch
 
 ### 专利数据库触发机制
 
@@ -105,11 +99,11 @@
 辅助函数
 --------
 
-.. autofunction:: optimized_kb_query.parse_query_results_optimized
+.. autofunction:: src.retrieval.kb_querier.parse_query_results_optimized
 
-.. autofunction:: optimized_kb_query.get_top_k_items
+.. autofunction:: src.retrieval.kb_querier.get_top_k_items
 
-.. autofunction:: optimized_kb_query.generate_answer_from_content
+.. autofunction:: src.retrieval.kb_querier.generate_answer_from_content
 
 **说明**：
 - ``generate_answer_from_content`` 调用 LLM 生成最终答案，自动移除 ``<think>`` 标签；
@@ -119,22 +113,19 @@
 配置依赖
 --------
 
-模块从 ``config.load_config`` 加载以下配置：
+模块从 ``src.utils.load_config`` 加载以下配置：
 
 - **数据库**：
-  - ``POSTGRES_CONN_CONFIG``：基础连接参数；
-  - ``KNOWLEDGE_BASES[kb_id]["postgres"]["database"]``：知识库专属数据库名；
-  - ``DB_TABLES``：实体/关系/Chunk 表名；
+  - ``get_postgres_conn_config()``：PostgreSQL连接配置；
 - **Milvus**：
-  - ``MILVUS_CONFIG``：连接参数；
-  - ``KNOWLEDGE_BASES[kb_id]["milvus"]["database"]``：Milvus Database；
-  - ``KNOWLEDGE_BASES[kb_id]["milvus"]["kg_collection"]``：图谱集合名；
-- **模型**：
-  - ``VLLM_EMBEDDING_CONFIG``：嵌入模型 API；
-  - ``CHAT_CONFIG``：回答生成 LLM API；
+  - ``get_milvus_config()``：Milvus连接配置；
+- **嵌入模型**：
+  - ``get_embedding_cfg()``：嵌入模型API配置；
+- **聊天模型**：
+  - ``get_chat_cfg()``：聊天模型API配置；
 - **查询参数**：
-  - ``QUERY_DEFAULTS``：默认 top_k、阈值、权重；
-  - ``SEARCH_PARAMS``：Milvus 搜索参数（如 ``ef``）。
+  - ``get_query_defaults()``：默认查询参数（top_k、阈值、权重）；
+  - ``get_search_params()``：Milvus搜索参数。
 
 安全与容错
 ----------
@@ -157,15 +148,19 @@
 
 .. code-block:: python
 
+   # 创建查询服务实例
+   connection_manager = ConnectionManager()
+   optimized_kb_query = OptimizedKbQuery(connection_manager)
+
    # 1. 嵌入计算（一次）
    embedding = connection_manager.get_embedding("华为专利")
 
    # 2. 并行检索
    allowed_chunk_ids, _ = optimized_kb_query.get_top_similar_chunks(
-       embedding=embedding, kb_id=1
+       embedding=embedding, dataset="my_dataset"
    )
    kg_res, use_db = optimized_kb_query.query_kg_source(
-       embedding=embedding, kb_id=1
+       embedding=embedding, dataset="my_dataset"
    )
 
    # 3. 批量查询
@@ -174,7 +169,7 @@
        entity_table="entities",
        relation_table="relations",
        allowed_chunk_ids=allowed_chunk_ids,
-       kb_id=1
+       dataset="my_dataset"
    )
 
    # 4. 解析与排序
@@ -184,7 +179,7 @@
 注意事项
 --------
 
-- **知识库 ID 必须有效**：所有方法依赖 ``kb_id`` 从配置中查找数据库/集合名；
+- **数据集名称必须有效**：所有方法依赖 ``dataset`` 从配置中查找数据库/集合名；
 - **向量维度一致**：确保嵌入模型输出维度与 Milvus 集合定义一致；
 - **Text2SQL 依赖**：专利数据库查询需额外实现 ``generate_answer()`` 函数（当前代码未包含）；
 - **内存控制**：全局 Chunk ID 限制为 10,000 个，防止单次查询爆炸。
