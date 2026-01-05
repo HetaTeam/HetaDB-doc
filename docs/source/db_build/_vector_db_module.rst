@@ -88,7 +88,7 @@
 配置依赖
 --------
 
-本模块依赖以下配置项（通过 ``config.load_config`` 加载）：
+本模块依赖以下配置项（通过 ``src.utils.load_config`` 加载）：
 
 - ``MILVUS_URI``：Milvus 服务地址（如 ``"localhost"``）
 - ``MILVUS_PORT``：Milvus 端口（如 ``19530``）

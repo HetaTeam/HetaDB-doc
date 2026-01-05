@@ -144,7 +144,7 @@
 .. code-block:: python
 
    from src.parser.email_archiver import process_account
-   from config.load_config import load_email_config  # 假设存在
+   from src.utils.load_config import load_email_config  # 假设存在
 
    config = load_email_config("email_config.yaml")
    load_dotenv()  # 加载 .env

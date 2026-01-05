@@ -127,6 +127,127 @@
      - ``1.0``
      - 实体/关系出现频次在综合评分中的权重
 
+API配置（api_config）
+--------------------
+
+.. _llm_config:
+
+LLM配置（llm）
+~~~~~~~~~~~~~
+
+大语言模型API配置：
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 30 50
+
+   * - 参数
+     - 默认值
+     - 说明
+   * - ``base_url``
+     - ``http://localhost:8000/v1``
+     - LLM API基础URL
+   * - ``api_key``
+     - ``EMPTY``
+     - API密钥
+   * - ``model``
+     - ``qwen3_32b``
+     - 模型名称
+   * - ``timeout``
+     - ``120``
+     - 请求超时时间(秒)
+   * - ``max_concurrent_requests``
+     - ``10``
+     - 最大并发请求数
+
+.. _vlm_config:
+
+VLM配置（vlm）
+~~~~~~~~~~~~~
+
+视觉语言模型API配置：
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 30 50
+
+   * - 参数
+     - 默认值
+     - 说明
+   * - ``base_url``
+     - ``http://localhost:8000/v1``
+     - VLM API基础URL
+   * - ``api_key``
+     - ``EMPTY``
+     - API密钥
+   * - ``model``
+     - ``qwen-vl-plus``
+     - 模型名称
+
+.. _embedding_config:
+
+嵌入模型配置（embedding_api）
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+向量嵌入模型API配置：
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 30 50
+
+   * - 参数
+     - 默认值
+     - 说明
+   * - ``base_url``
+     - ``http://localhost:8000/v1``
+     - 嵌入API基础URL
+   * - ``model``
+     - ``text-embedding-3-small``
+     - 嵌入模型名称
+   * - ``api_key``
+     - ``EMPTY``
+     - API密钥
+   * - ``dim``
+     - ``1536``
+     - 向量维度
+   * - ``batch_size``
+     - ``100``
+     - 批处理大小
+   * - ``num_threads``
+     - ``4``
+     - 处理线程数
+   * - ``timeout``
+     - ``60``
+     - 请求超时时间(秒)
+
+FastAPI配置（fastapi_config）
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Web服务配置：
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 30 50
+
+   * - 参数
+     - 默认值
+     - 说明
+   * - ``env``
+     - ``dev``
+     - 运行环境(dev/prod)
+   * - ``host``
+     - ``127.0.0.1``
+     - 服务绑定地址
+   * - ``port``
+     - ``8000``
+     - 服务端口
+   * - ``reload``
+     - ``true``
+     - 开发模式自动重载
+   * - ``log_level``
+     - ``info``
+     - 日志级别
+
 数据库配置（db_config）
 ----------------------
 

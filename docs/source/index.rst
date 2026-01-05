@@ -12,6 +12,10 @@ Welcome to HetaDB's documentation!
 * 多类型的数据库的部署和使用
 * 多种信息检索方式的集成调用
 * 知识库文档名目管理
+* RESTful API服务接口
+* 自动化知识库构建流水线
+* 智能查询优化和多跳推理
+* 基于SQL的结构化数据检索
 
 2. 大语言模型的API支持
 ----------------------
@@ -51,36 +55,63 @@ Contents
 
 .. toctree::
    :maxdepth: 2
+   :caption: 自动化脚本
+   :name: scripts
+
+   scripts/scripts.rst
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API控制器
+   :name: controllers
+
+   controllers/controllers.rst
+   controllers/chat_controller.rst
+   controllers/files_controller.rst
+   controllers/config_controller.rst
+
+.. toctree::
+   :maxdepth: 2
    :caption: 文件解析
    :name: file_parsing
 
-   file_parsing/_parser_assignment_module
-   file_parsing/_unified_output_module
-   file_parsing/_text_parser_module
-   file_parsing/_doc_parser_module
-   file_parsing/_html_parser_module
-   file_parsing/_image_parser_module
-   file_parsing/_sheet_parser_module
+   file_parsing/_parser_assignment_module.rst
+   file_parsing/_unified_output_module.rst
+   file_parsing/_text_parser_module.rst
+   file_parsing/_doc_parser_module.rst
+   file_parsing/_html_parser_module.rst
+   file_parsing/_image_parser_module.rst
+   file_parsing/_sheet_parser_module.rst
 
 
 .. toctree::
    :maxdepth: 2
    :caption: 数据库集成
-   :name: database_integration
+   :name: db_build
 
    db_build/db_build.rst
-   db_build/_graph_db_module.rst
+   db_build/_data_processing_pipeline.rst
+   db_build/_text_chunker_module.rst
+   db_build/_chunks_merge_module.rst
+   db_build/_graph_extraction_module.rst
+   db_build/_node_dedup_merge_module.rst
+   db_build/_rel_dedup_merge_module.rst
+   db_build/_merge_mappings_module.rst
+   db_build/_graph_vector_module.rst
+   db_build/_kg_prompt_module.rst
    db_build/_vector_db_module.rst
-   db_build/_auto_schema_csv_ingestor_module.rst
+   db_build/_vector_text_chunker_module.rst
+   db_build/_sql_db_module.rst
+   db_build/_csv_ingestor_module.rst
+   db_build/_csv2db_module.rst
 
 .. toctree::
    :maxdepth: 2
    :caption: 检索与生成
-   :name: retrival_generation
+   :name: retrieval
 
    query/_optimized_kb_query_module.rst
    query/_descriptive_t2s_engine_module.rst
-   query/_knowledge_api_module.rst
 
 
 
@@ -90,14 +121,15 @@ Contents
    :name: organization
 
    organize/_query_rewriter_module.rst
-   organize/_multi_hop_qa_module:.rst
+   organize/_multi_hop_qa_module.rst
 
 
 .. toctree::
    :maxdepth: 2
-   :caption: 额外工具  
-   :name: organization
+   :caption: 额外工具
+   :name: tools
 
-   ex_tools/_bookmarks_archiver_module.rst
-   ex_tools/_email_archiver_module.rst
+   tools/_bookmarks_archiver_module.rst
+   tools/_email_archiver_module.rst
+   tools/_file_management_module.rst
 

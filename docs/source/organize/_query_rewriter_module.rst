@@ -129,7 +129,7 @@
   - ``tiktoken``（Token 计数）
   - ``json`` / ``re``（解析与清理）
 - **配置**：
-  - ``config.load_config.CHAT_CONFIG``：包含 vLLM 的 ``api_key``、``base_url``、``model``、``timeout``
+  - ``src.utils.load_config.get_chat_cfg()``：包含 vLLM 的 ``api_key``、``base_url``、``model``、``timeout``
 
 配置示例（config/api_config.yaml）
 ----------------------------------
