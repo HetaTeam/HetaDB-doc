@@ -54,7 +54,7 @@ Contents
 
 .. toctree::
    :maxdepth: 2
-   :caption: API控制器
+   :caption: 控制器管理
    :name: controllers
 
    controllers/controllers.rst
