@@ -3,14 +3,14 @@
 快速入门指南
 ============
 
-本指南将帮助您在 **5 分钟内** 完成 HetaDB 系统的环境搭建、依赖安装与首个示例运行
+本指南将帮助您快速完成 HetaDB 系统的环境搭建、依赖安装与首个示例运行
 
-.. raw:: html
+.. .. raw:: html
 
-    <div class="quick-start">
-        <h3>⚡ 5 分钟快速体验</h3>
-        <p>无需复杂配置，三步即可运行完整流程：文件解析 → 数据入库 → 智能问答。</p>
-    </div>
+..     <div class="quick-start">
+..         <h3>⚡30分钟快速体验</h3>
+..         <p>无需复杂配置，三步即可运行完整流程：文件解析 → 数据入库 → 智能问答。</p>
+..     </div>
 
 环境准备
 --------
@@ -22,13 +22,13 @@
 - **Python 版本**：3.10 或更高（不支持 3.9 及以下）
 - **内存**：≥ 8 GB RAM（处理大文档时建议 ≥ 16 GB）
 - **存储**：≥ 10 GB 可用空间（用于模型缓存、中间文件与数据库）
-- **GPU（推荐）**：NVIDIA GPU（CUDA 支持），用于加速嵌入计算与 LLM 推理  
-  > **无 GPU 也可运行**：系统会自动回退到 CPU 模式（速度较慢）
+- **GPU（推荐）**：NVIDIA GPU（CUDA 支持），用于加速文档解析和嵌入计算；无 GPU 也可运行，系统会自动回退到 CPU 模式（速度较慢）
+- **大模型推理API（必备）**：在数据加工流程中可酌情调用商用API，但建议优先采用本地部署模型，以控制API调用成本并避免Token消耗过快。
 
 安装步骤
 ^^^^^^^^
 
-1. **创建虚拟环境**（推荐使用 ``uv``，速度更快）
+1. **创建虚拟环境** （推荐使用uv，速度更快）
 
    .. code-block:: bash
 
@@ -37,50 +37,62 @@
       pip install uv
 
       # 创建并激活虚拟环境
-      uv venv h-rag --python=3.10
-      source h-rag/bin/activate      # Linux / macOS
+      uv venv HetaDB --python=3.10
+      source HetaDB/bin/activate      # Linux / macOS
       # 或
-      h-rag\Scripts\activate         # Windows
+      HetaDB\Scripts\activate         # Windows
 
-   > **备选方案**：使用 conda
-   >
-   > .. code-block:: bash
-   >
-   >    conda create -n h-rag python=3.10 -y
-   >    conda activate h-rag
+   **备选方案**：使用 conda
+   
+   .. code-block:: bash
+   
+      conda create -n HetaDB python=3.10 -y
+      conda activate HetaDB
 
-2. **安装 HRAG 及其依赖**
+2. **安装 HetaDB 及其依赖**
 
    .. code-block:: bash
 
       # 以可编辑模式安装项目（开发模式）
       uv pip install -e .
 
-   > 此命令将自动安装：
-   > - 核心依赖（PyTorch、Transformers、LangChain）
-   > - 向量数据库（Milvus / pymilvus）
-   > - 数据库驱动（psycopg2、asyncpg）
-   > - 解析工具（pdfminer、beautifulsoup4、pandas 等）
+   此命令将自动安装：
+
+   - 核心依赖（torch、langchain_core、langchain_ollama、openai、qwen_agent、tiktoken）
+   - 向量与数据库（pymilvus、psycopg2、SQLAlchemy）
+   - 数据解析与处理（beautifulsoup4、pandas、mineru、Pillow、py7zr、rarfile）
+   - Web 服务与工具（fastapi、uvicorn、httpx、Requests、playwright、imap_tools）
+   - 基础工具库（loguru、pydantic、python-dotenv、PyYAML、tqdm、pytest、numpy、scikit_learn）
 
 3. **验证安装**
 
+   
    .. code-block:: bash
-
+   
       # 验证 PyTorch
-      python -c "import torch; print('✅ PyTorch', torch.__version__, '| CUDA available:', torch.cuda.is_available())"
+      python -c "import torch; print('✅ PyTorch', torch.version, '| CUDA available:', torch.cuda.is_available())"
 
-      # 验证 Transformers
-      python -c "import transformers; print('✅ Transformers', transformers.__version__)"
+      # 验证 LangChain 核心
+      python -c "import langchain_core; print('✅ LangChain Core', langchain_core.version)"
 
-      # 验证 HRAG 模块
-      python -c "from src.file_parsing import ParserAssignment; print('✅ HRAG core imported successfully')"
+      # 验证 Milvus 客户端
+      python -c "import pymilvus; print('✅ pymilvus', pymilvus.version)"
+
+      # 验证 PostgreSQL 驱动
+      python -c "import psycopg2; print('✅ psycopg2 imported successfully')"
+
+      # 验证解析工具
+      python -c "import beautifulsoup4, pandas, mineru, PIL; print('✅ Parsing tools (beautifulsoup4, pandas, mineru, Pillow) imported successfully')"
+
+      # 验证 FastAPI 与 Web 工具
+      python -c "import fastapi, httpx, playwright; print('✅ Web tools (fastapi, httpx, playwright) imported successfully')"
 
    > 若无报错且输出版本信息，则安装成功。
 
 运行示例
 --------
 
-HRAG 提供完整的端到端示例，涵盖 **文件解析 → 数据入库 → 问答服务** 三大环节。
+HetaDBG 提供完整的端到端示例，涵盖 **文件解析 → 数据入库 → 问答服务** 三大环节。
 
 1. **准备与解析原始文件**
 
