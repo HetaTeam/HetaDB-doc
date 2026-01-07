@@ -45,12 +45,11 @@ Contents
 --------
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
    :caption: 快速上手
    :name: quick_start
 
    quick_start/quick_start.rst
-
    quick_start/config.rst
 
 .. toctree::
