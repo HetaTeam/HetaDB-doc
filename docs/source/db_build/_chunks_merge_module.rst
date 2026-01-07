@@ -117,10 +117,9 @@ main 函数
 .. code-block:: json
 
    {
-     "ChunkId": "chunk_0001",
-     "Text": "分块文本内容...",
-     "SourceTitle": "文档标题",
-     "SourceUrl": "来源URL"
+     "chunk_id": "chunk_0001",
+     "text": "分块文本内容...",
+     "source": "文档来源标识"
    }
 
 输出格式
@@ -131,12 +130,11 @@ main 函数
 .. code-block:: json
 
    {
-     "ChunkId": "merged_chunk_0001",
-     "Text": "合并后的文本内容...",
-     "SourceTitle": "文档标题",
-     "SourceUrl": "来源URL",
-     "MergedFrom": ["chunk_0001", "chunk_0002"],
-     "MergeCount": 2
+     "chunk_id": "merged_chunk_0001",
+     "text": "合并后的文本内容...",
+     "embedding": [0.1, 0.2, 0.3, ...],
+     "source_id": "文档来源标识",
+     "source_chunk": "[\"chunk_0001\", \"chunk_0002\"]"
    }
 
 配置建议
@@ -184,7 +182,6 @@ main 函数
 注意事项
 --------
 
-* 合并过程计算密集，建议在有GPU的环境中运行
 * 合并阈值需要根据具体数据特点调整
 * 大数据集建议分批处理以控制内存使用
 * 合并后的分块ID会发生变化，需要更新相关引用

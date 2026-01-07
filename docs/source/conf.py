@@ -41,6 +41,11 @@ extensions = [
     'myst_parser',
 ]
 
+# Add project root to sys.path for autodoc
+import os
+import sys
+sys.path.insert(0, os.path.abspath('../..'))
+
 # Add any paths that contain templates here, relative to this directory
 templates_path = ['_templates']
 
@@ -267,6 +272,19 @@ autodoc_mock_imports = [
     'tensorboard',
     'optuna',
     'hyperopt',
+    'psycopg2',
+    'psycopg2.extras',
+    'concurrent.futures',
+    'pathlib',
+    'json',
+    'logging',
+    'os',
+    'sys',
+    'src',
+    'src.utils',
+    'src.utils.load_config',
+    'src.utils.utils',
+    'yaml',
     'dask',
     'pyspark',
     'psutil',

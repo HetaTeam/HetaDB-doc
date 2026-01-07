@@ -91,10 +91,10 @@
 ------
 
 - ``src.file_parsing.convert_to_unified`` 中的以下组件：
-  - ``MetaDict``、``TextElement``、``UnifiedDoc``（类型定义）
-  - ``_now_iso()``（生成 ISO 时间戳）
-  - ``load_hash_mapping()``（加载哈希映射）
-  - ``process_middle_files()``（合并中间文件）
+  - ``MetaDict``、``TextElement``、``UnifiedDoc`` （类型定义）
+  - ``_now_iso()`` （生成 ISO 时间戳）
+  - ``load_hash_mapping()`` （加载哈希映射）
+  - ``process_middle_files()`` （合并中间文件）
 
 注意事项
 --------

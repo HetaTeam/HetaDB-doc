@@ -1,130 +1,294 @@
 .. _vector_db_module:
 
 向量数据库操作模块
-================
+===================
 
-本模块专注于将 **分块文本（chunks）** 和 **知识图谱（graph）** 的向量嵌入数据高效批量插入到 **Milvus 向量数据库**，支持多线程并发加载与自动集合（Collection）管理。
+本模块提供完整的 **Milvus 向量数据库** 操作功能，专门用于 **HetaDB 知识库系统** 的向量数据存储和检索。支持高效的向量相似度搜索和大规模数据管理。
 
-该模块是构建语义检索与图谱向量检索能力的核心组件，通常在嵌入模型生成向量文件后调用。
+该模块是构建语义检索与图谱向量检索能力的核心组件，支持节点、关系和文本分块的三种向量类型。
 
-功能概览
+功能特性
 --------
 
-- **自动连接 Milvus**：支持指定 URI、端口及数据库（Database）；
-- **自动建集（Collection）**：
-  - **图谱集合（Graph Collection）**：存储节点/关系描述及其向量；
-  - **分块集合（Chunk Collection）**：存储原始文本分块及其向量；
-- **向量索引自动创建**：默认使用 ``IVF_FLAT``，相似度度量为 **内积（IP）**；
-- **高并发加载**：多线程读取多个 JSONL 文件并批量插入（默认 8 线程，每批 1000 条）；
-- **健壮性处理**：跳过格式错误或字段缺失的记录，记录警告日志；
-- **进度可视化**：使用 ``tqdm`` 显示插入进度。
+- **多集合管理**：支持节点集合、关系集合和分块集合的自动创建和管理
+- **向量相似度搜索**：基于 Milvus 的 ANN（近似最近邻）搜索，支持 Top-K 查询
+- **批量数据操作**：高效的批量插入、删除和导出功能
+- **自动索引优化**：根据数据规模自动选择最优索引类型
+- **并发处理优化**：多线程处理提高数据导入效率
+- **容错机制**：完善的异常处理和重试逻辑
+- **内存管理**：控制批量大小避免内存溢出
 
-数据输入要求
+数据格式说明
 ------------
 
-模块从指定数据目录（``data_dir``）读取以下嵌入文件（均为 JSONL 格式）：
+模块处理三种主要的数据类型，每种都有特定的数据结构要求：
 
-1. **图谱向量目录**：``<data_dir>/emb/graph_embedding/*.jsonl``  
-   每行需包含字段（大小写不敏感，支持 ``id``/``Id``）：
-   - ``id`` 或 ``Id``：记录唯一标识（主键）
-   - ``chunk_id`` 或 ``ChunkId``：关联的分块 ID
-   - ``type`` 或 ``Type``：类型（如 ``"attr"`` 表示属性节点，``"triple"`` 表示关系）
-   - ``description`` 或 ``Description``：文本描述（用于生成向量）
-   - ``embedding``：向量列表（``list[float]``）
-   - 其他字段（如 ``NodeName``, ``Node1``, ``Node2``, ``Relation``）根据 ``type`` 动态填充
+1. **节点数据格式**
 
-2. **分块向量目录**：``<data_dir>/emb/chunk_embedding/*.jsonl``  
-   每行需包含：
-   - ``Id``：唯一 ID
-   - ``ChunkId``：分块 ID
-   - ``Text``：原始文本内容
-   - ``embedding``：文本嵌入向量
+   用于存储知识图谱的实体节点：
 
-> **注意**：所有嵌入向量维度必须与配置中的 ``EMB_DIM`` 一致。
+   * ``id``：节点唯一标识（主键）
+   * ``nodename``：节点名称
+   * ``description``：节点描述文本
+   * ``type``：节点类型
+   * ``subtype``：节点子类型（可选）
+   * ``attr``：额外属性（JSON字符串）
+   * ``embedding``：向量表示（``list[float]``）
+
+2. **关系数据格式**
+
+   用于存储知识图谱的实体关系：
+
+   * ``id``：关系唯一标识（主键）
+   * ``node1``：起始节点名称
+   * ``node2``：目标节点名称
+   * ``relation``：关系类型
+   * ``type``：关系分类
+   * ``description``：关系描述文本
+   * ``embedding``：向量表示（``list[float]``）
+
+3. **分块数据格式**
+
+   用于存储文本分块：
+
+   * ``chunk_id``：分块唯一标识（主键）
+   * ``text``：原始文本内容
+   * ``text_embedding``：文本向量表示
+   * ``source_id``：来源文档标识
+   * ``source_chunk``：来源分块信息（JSON字符串）
+
+**重要说明**：所有向量维度必须与集合配置的 ``embedding_dim`` 参数一致，否则插入操作会失败。
 
 核心函数
 --------
 
-.. autofunction:: vector_db.connect_milvus
+连接与集合管理
+~~~~~~~~~~~~~~
 
-.. autofunction:: vector_db.ensure_collection
+.. autofunction:: src.db_build.vector_db.vector_db.connect_milvus
 
-.. autofunction:: vector_db.ensure_chunk_collection
+.. autofunction:: src.db_build.vector_db.vector_db.ensure_nodes_collection
 
-.. autofunction:: vector_db.process_graph_to_milvus
+.. autofunction:: src.db_build.vector_db.vector_db.ensure_rel_collection
 
-.. autofunction:: vector_db.process_chunks_to_milvus
+.. autofunction:: src.db_build.vector_db.vector_db.ensure_chunk_collection
+
+数据操作函数
+~~~~~~~~~~~~
+
+.. autofunction:: src.db_build.vector_db.vector_db.insert_nodes_records_to_milvus
+
+.. autofunction:: src.db_build.vector_db.vector_db.insert_relations_to_milvus
+
+.. autofunction:: src.db_build.vector_db.vector_db.insert_chunk_batch_milvus
+
+.. autofunction:: src.db_build.vector_db.vector_db.delete_nodes_records_from_milvus
+
+.. autofunction:: src.db_build.vector_db.vector_db.delete_relations_from_milvus
+
+搜索与查询
+~~~~~~~~~~
+
+.. autofunction:: src.db_build.vector_db.vector_db.search_similar_entities
+
+.. autofunction:: src.db_build.vector_db.vector_db.search_similar_relations
+
+.. autofunction:: src.db_build.vector_db.vector_db.get_chunk_text_by_id
 
 集合（Collection）结构
---------------------
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-### 图谱集合（Graph Collection）
+节点集合（Nodes Collection）
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-| 字段名        | 类型          | 说明                     |
-|---------------|---------------|--------------------------|
-| ``id``        | VARCHAR(255)  | 主键，记录唯一 ID        |
-| ``chunkid``   | VARCHAR(255)  | 关联的分块 ID            |
-| ``type``      | VARCHAR(64)   | 记录类型（attr/triple）  |
-| ``description``| VARCHAR(2048) | 文本描述                 |
-| ``nodename``  | VARCHAR(512)  | 属性节点名称（仅 type=attr） |
-| ``node1``     | VARCHAR(512)  | 关系起点（仅 type=triple） |
-| ``node2``     | VARCHAR(512)  | 关系终点（仅 type=triple） |
-| ``relation``  | VARCHAR(512)  | 关系类型（仅 type=triple） |
-| ``embedding`` | FLOAT_VECTOR  | 向量（维度：``EMB_DIM``） |
+存储知识图谱实体节点的向量数据：
 
-**索引**：在 ``embedding`` 上创建 ``IVF_FLAT`` 索引，``metric_type="IP"``。
+.. list-table::
+   :header-rows: 1
+   :widths: 20 15 50
 
-### 分块集合（Chunk Collection）
+   * - 字段名
+     - 类型
+     - 说明
+   * - ``id``
+     - VARCHAR(255)
+     - 主键，节点唯一标识
+   * - ``nodename``
+     - VARCHAR(512)
+     - 节点名称
+   * - ``description``
+     - VARCHAR(2048)
+     - 节点描述文本
+   * - ``type``
+     - VARCHAR(64)
+     - 节点类型
+   * - ``subtype``
+     - VARCHAR(64)
+     - 节点子类型
+   * - ``attr``
+     - VARCHAR(65535)
+     - 额外属性（JSON字符串）
+   * - ``embedding``
+     - FLOAT_VECTOR
+     - 节点向量表示
 
-| 字段名           | 类型           | 说明               |
-|------------------|----------------|--------------------|
-| ``id``           | VARCHAR(255)   | 主键               |
-| ``chunk_id``     | VARCHAR(255)   | 分块 ID            |
-| ``text``         | VARCHAR(65535) | 原始文本内容       |
-| ``text_embedding``| FLOAT_VECTOR  | 文本嵌入向量       |
+**索引**：在 ``embedding`` 字段创建 ``IVF_FLAT`` 索引，``metric_type="IP"``。
 
-**索引**：在 ``text_embedding`` 上创建 ``IVF_FLAT`` 索引，``metric_type="IP"``。
+关系集合（Relations Collection）
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+存储知识图谱实体关系的向量数据：
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 15 50
+
+   * - 字段名
+     - 类型
+     - 说明
+   * - ``id``
+     - VARCHAR(255)
+     - 主键，关系唯一标识
+   * - ``node1``
+     - VARCHAR(512)
+     - 起始节点名称
+   * - ``node2``
+     - VARCHAR(512)
+     - 目标节点名称
+   * - ``relation``
+     - VARCHAR(256)
+     - 关系类型
+   * - ``type``
+     - VARCHAR(64)
+     - 关系分类
+   * - ``description``
+     - VARCHAR(2048)
+     - 关系描述文本
+   * - ``embedding``
+     - FLOAT_VECTOR
+     - 关系向量表示
+
+**索引**：在 ``embedding`` 字段创建 ``IVF_FLAT`` 索引，``metric_type="IP"``。
+
+分块集合（Chunks Collection）
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+存储文本分块的向量数据：
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 15 50
+
+   * - 字段名
+     - 类型
+     - 说明
+   * - ``chunk_id``
+     - VARCHAR(255)
+     - 主键，分块唯一标识
+   * - ``text``
+     - VARCHAR(65535)
+     - 原始文本内容
+   * - ``text_embedding``
+     - FLOAT_VECTOR
+     - 文本向量表示
+   * - ``source_id``
+     - VARCHAR(1000)
+     - 来源文档标识
+   * - ``source_chunk``
+     - VARCHAR(65535)
+     - 来源分块信息（JSON字符串）
+
+**索引**：在 ``text_embedding`` 字段创建 ``IVF_FLAT`` 索引，``metric_type="IP"``。
 
 配置依赖
 --------
 
 本模块依赖以下配置项（通过 ``src.utils.load_config`` 加载）：
 
-- ``MILVUS_URI``：Milvus 服务地址（如 ``"localhost"``）
-- ``MILVUS_PORT``：Milvus 端口（如 ``19530``）
-- ``EMB_DIM``：嵌入向量维度（如 ``1024``）
-- 知识库配置（通过 ``get_kb_config(kb_id)`` 获取）：
-  - ``milvus_database``（可选）：Milvus 数据库名
-  - ``kg_collection``：图谱集合名称
-  - ``chunk_collection``：分块集合名称
+**Milvus 配置** （通过 ``get_milvus_config()`` 获取）：
+- ``host``：Milvus 服务地址（如 ``"localhost"``）
+- ``port``：Milvus 端口（如 ``19530``）
+
+**向量维度配置**：
+- ``embedding_dim``：嵌入向量维度（如 ``1024``），在创建集合时指定
+
+**其他配置**：
+- ``BATCH_SIZE``：批量插入大小（默认 1000）
+- ``NUM_THREADS``：并发线程数（默认 8）
 
 使用示例
 --------
 
-在您的主流程中调用：
+连接 Milvus 数据库：
 
 .. code-block:: python
 
-   from src.db.vector_db import process_graph_to_milvus, process_chunks_to_milvus
+   from src.db_build.vector_db.vector_db import connect_milvus
 
-   kb_id = 1
-   data_dir = "data/processed/my_dataset"
+   # 连接到 Milvus
+   connect_milvus()
 
-   # 插入图谱向量
-   process_graph_to_milvus(kb_id, data_dir)
+创建集合并插入数据：
 
-   # 插入分块向量
-   process_chunks_to_milvus(kb_id, data_dir)
+.. code-block:: python
 
-或作为独立脚本集成到 ETL 流程中。
+   from src.db_build.vector_db.vector_db import (
+       ensure_nodes_collection,
+       ensure_rel_collection,
+       ensure_chunk_collection,
+       insert_nodes_records_to_milvus,
+       insert_relations_to_milvus,
+       insert_chunk_batch_milvus
+   )
+
+   # 创建节点集合（维度为 1024）
+   nodes_collection = ensure_nodes_collection("my_nodes", dim=1024)
+
+   # 创建关系集合
+   rel_collection = ensure_rel_collection("my_relations", dim=1024)
+
+   # 创建分块集合
+   chunk_collection = ensure_chunk_collection("my_chunks", embedding_dim=1024)
+
+   # 准备节点数据
+   node_records = [
+       {
+           "id": "node_1",
+           "nodename": "人工智能",
+           "description": "人工智能技术领域",
+           "type": "concept",
+           "embedding": [0.1, 0.2, 0.3, ...]  # 1024维向量
+       }
+   ]
+
+   # 插入节点数据
+   insert_nodes_records_to_milvus(nodes_collection, node_records)
+
+向量相似度搜索：
+
+.. code-block:: python
+
+   from src.db_build.vector_db.vector_db import search_similar_entities
+
+   # 搜索相似实体
+   query_vector = [0.1, 0.2, 0.3, ...]  # 查询向量
+   similar_entities = search_similar_entities(
+       nodes_collection,
+       query_vector,
+       top_k=10
+   )
+
+   for entity in similar_entities:
+       print(f"ID: {entity['id']}, Score: {entity['score']:.3f}")
 
 性能与调优
 ----------
 
-- **线程数**：通过 ``NUM_THREADS = 8`` 控制并发读取线程数，可根据 I/O 能力调整；
-- **批大小**：``BATCH_SIZE = 1000`` 控制每批插入记录数，平衡内存与吞吐；
-- **索引参数**：当前 ``nlist=1024``，适用于百万级数据；超大规模可考虑 ``HNSW`` 或调整 ``nlist``；
-- **向量维度**：确保所有嵌入向量维度与 ``EMB_DIM`` 一致，否则插入会失败。
+- **并发线程数**：``NUM_THREADS = 8`` 控制并发处理的线程数量，可根据系统性能调整
+- **批量大小**：``BATCH_SIZE = 1000`` 控制每次批量插入的记录数量，平衡内存使用和吞吐量
+- **向量维度**：所有向量必须与集合定义的维度完全一致，否则插入操作会失败
+- **索引参数**：默认使用 ``IVF_FLAT`` 索引，``nlist=1024``，适用于中等规模数据集
+- **内存管理**：通过控制批量大小避免内存溢出，支持大规模数据处理
 
 日志与监控
 ----------
@@ -147,7 +311,12 @@
 注意事项
 --------
 
-- **主键唯一性**：``id`` 字段必须全局唯一，否则 Milvus 插入会失败；
-- **向量类型**：必须为 Python ``list[float]``，不支持 NumPy 数组；
-- **文本长度**：``description`` 和 ``text`` 字段有最大长度限制（2048 / 65535），超长内容需预处理截断；
-- **Milvus 版本**：建议使用 Milvus 2.3+，以确保 Database 功能支持。
+- **主键唯一性**：各集合的 ``id``/``chunk_id`` 字段必须全局唯一，否则会导致插入失败
+- **向量格式**：向量必须为 Python ``list[float]`` 类型，不支持 NumPy 数组
+- **维度一致性**：所有向量维度必须与集合 schema 中定义的维度完全匹配
+- **字段长度限制**：
+  - VARCHAR 字段有最大长度限制，超长内容会被截断
+  - ``text`` 和 ``attr`` 字段支持较长内容（65535字符）
+- **数据完整性**：缺失关键字段（如 ``id``、``embedding``）的记录会被跳过
+- **集合重用**：已存在的集合会被直接复用，不会重复创建
+- **异常处理**：非致命异常只记录警告，不中断整体处理流程

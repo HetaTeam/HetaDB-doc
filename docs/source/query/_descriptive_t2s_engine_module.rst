@@ -1,7 +1,7 @@
 .. _descriptive_t2s_engine_module:
 
 描述性文本到 SQL 引擎
-====================
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 本模块实现 **自然语言 → 结构化 SQL → 自然语言答案** 的端到端问答流程，专为已导入 PostgreSQL 的结构化表格数据设计。  
 它利用 LLM 生成安全 SQL，并基于执行结果生成简洁、可读的中文回答。
@@ -63,9 +63,11 @@
 ``postgres_config`` : dict  
    PostgreSQL 连接配置，需包含：``host``, ``port``, ``database``, ``user``, ``password``。
 
-``use_llm`` : Callable  
+``use_llm`` : Callable
    异步 LLM 客户端函数，需满足：
+
    .. code-block:: python
+
       async def llm(prompt: str) -> str:
 
 主方法
@@ -113,8 +115,9 @@ LLM 提示词设计
 
 模块使用两阶段提示：
 
-1. **SQL 生成提示**（``query_info_prompt``）  
-   - 提供：问题、表名、用途、字段列表、字段说明、示例 SQL  
+1. **SQL 生成提示** （``query_info_prompt``）
+
+   - 提供：问题、表名、用途、字段列表、字段说明、示例 SQL
    - 强制规则：
      - 字段名必须用双引号；
      - 仅允许 ``SELECT``；
@@ -122,8 +125,9 @@ LLM 提示词设计
      - 模糊匹配优先使用 ``LIKE``；
      - 输出仅为 SQL 语句，以分号结尾。
 
-2. **答案生成提示**（``answer_info_prompt``）  
-   - 提供：原始问题、生成的 SQL、执行结果（最多前 5 行）  
+2. **答案生成提示** （``answer_info_prompt``）
+
+   - 提供：原始问题、生成的 SQL、执行结果（最多前 5 行）
    - 强制规则：
      - 输出纯中文段落；
      - 简洁直给，不列数据；

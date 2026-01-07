@@ -38,11 +38,11 @@
    :undoc-members:
    :show-inheritance:
 
-   .. automethod:: __init__
-   .. automethod:: cleanup
-   .. automethod:: step1_assignment
-   .. automethod:: extract_archive
-   .. automethod:: step2_batch_parse
+   .. automethod:: src.file_parsing.parser_assignment.ParserAssignment.__init__
+   .. automethod:: src.file_parsing.parser_assignment.ParserAssignment.cleanup
+   .. automethod:: src.file_parsing.parser_assignment.ParserAssignment.step1_assignment
+   .. automethod:: src.file_parsing.parser_assignment.ParserAssignment.extract_archive
+   .. automethod:: src.file_parsing.parser_assignment.ParserAssignment.step2_batch_parse
 
 构造函数参数
 ~~~~~~~~~~~~
@@ -102,11 +102,11 @@
 ``step2_batch_parse(llm, vlm)``  
    并行执行各类文件的批量解析：
 
-   - **文本文件**（如 ``.txt``, ``.md``）：使用 ``text_parser.parse()`` → 输出 JSONL；
-   - **文档文件**（如 ``.pdf``, ``.docx``, ``.pptx``）：使用 ``doc_parser.batch_parse()`` → 提取文本与内嵌图像；
+   - **文本文件** （如 ``.txt``, ``.md``）：使用 ``text_parser.parse()`` → 输出 JSONL；
+   - **文档文件** （如 ``.pdf``, ``.docx``, ``.pptx``）：使用 ``doc_parser.batch_parse()`` → 提取文本与内嵌图像；
    - **HTML 文件**：使用 ``html_parser.parse()`` → 输出 JSONL；
-   - **图像文件**（原始图像 + 文档中提取的图像）：通过 ``image_parser.create_description()`` 调用 VLM 生成描述（异步）；
-   - **电子表格**（如 ``.csv``, ``.xlsx``）：转换为 CSV，并调用 LLM 生成表格语义摘要（异步）。
+   - **图像文件** （原始图像 + 文档中提取的图像）：通过 ``image_parser.create_description()`` 调用 VLM 生成描述（异步）；
+   - **电子表格** （如 ``.csv``, ``.xlsx``）：转换为 CSV，并调用 LLM 生成表格语义摘要（异步）。
 
    .. note::
       需传入有效的 LLM 和 VLM 客户端对象（例如来自 OpenAI、Anthropic 或本地推理服务）。

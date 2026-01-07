@@ -1,7 +1,7 @@
 .. _email_archiver_module:
 
 邮件读取与归档器
-===============
+~~~~~~~~~~~~~~~~
 
 本模块提供从多个邮箱账户拉取邮件、去重归档为结构化 JSON 与附件的能力，支持 **IMAP 协议**、**多账户配置**、**增量同步** 与 **附件保存**。
 
@@ -34,7 +34,8 @@
 配置要求
 --------
 
-### 1. 环境变量（.env）
+环境变量（.env）
+~~~~~~~~~~~~~~~~
 
 每个邮箱提供商需定义一对环境变量：
 
@@ -45,9 +46,10 @@
    EMAIL_USER_163=user@163.com
    EMAIL_PASS_163=password_456
 
-> **安全提示**：建议使用 **应用专用密码**（而非主密码），尤其对 Gmail/Outlook。
+**安全提示**：建议使用 **应用专用密码** （而非主密码），尤其对 Gmail/Outlook。
 
-### 2. YAML 配置文件（示例）
+YAML 配置文件（示例）
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: yaml
 
@@ -70,12 +72,13 @@
        name: "Outlook"
        vendor: "Microsoft Corporation"
 
-> **注意**：``provider`` 字段值将转为大写并拼接到环境变量名中（如 ``EMAIL_USER_163``）。
+**注意**：``provider`` 字段值将转为大写并拼接到环境变量名中（如 ``EMAIL_USER_163``）。
 
 类说明
 ------
 
-### EmailReader
+EmailReader
+~~~~~~~~~~~
 
 负责连接 IMAP 服务器并拉取邮件。
 
@@ -83,7 +86,8 @@
 - **163 邮箱特殊处理**：若配置中包含 ``imap_id_info``，在登录后发送 ``ID`` 命令，提高连接成功率；
 - **邮件对象增强**：为每封 ``MailMessage`` 添加 ``account``、``mailbox``、``save_root`` 属性，便于后续处理。
 
-### MailToJson
+MailToJson
+~~~~~~~~~~
 
 负责将邮件对象转换为 JSON 并持久化。
 
@@ -139,7 +143,8 @@
 使用示例
 --------
 
-### 单账户处理
+单账户处理
+~~~~~~~~~~
 
 .. code-block:: python
 
@@ -152,7 +157,8 @@
    saved = process_account("工作邮箱", config, env_bool=True)
    print(f"保存了 {saved} 封新邮件")
 
-### 多账户并发（需外部实现）
+多账户并发（需外部实现）
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 

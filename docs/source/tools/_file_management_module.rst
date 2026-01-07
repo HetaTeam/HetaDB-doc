@@ -136,7 +136,7 @@ CSV输出功能
 
 CSV文件示例：
 
-.. code-block:: csv
+.. code-block:: text
 
    hash_name,dataset,file_type,source,description,timestamp
    abc123def,papers,pdf,/data/input/paper1.pdf,人工智能研究论文,2024-01-15T10:30:00Z
@@ -163,7 +163,7 @@ CSV文件示例：
 
 模块期望以下目录结构存在：
 
-.. code-block::
+.. code-block:: text
 
    data/
    └── parsed_file/

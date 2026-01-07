@@ -138,7 +138,7 @@ Schema文件格式
 实体Schema CSV格式
 ~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: csv
+.. code-block:: text
 
    实体类型,描述,示例
    Person,自然人,张三、李四
@@ -148,7 +148,7 @@ Schema文件格式
 关系Schema CSV格式
 ~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: csv
+.. code-block:: text
 
    关系类型,描述,示例
    属于,实体归属关系,张三属于清华大学

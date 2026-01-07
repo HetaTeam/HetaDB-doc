@@ -3,85 +3,108 @@
 图谱向量化模块
 ==============
 
-本模块负责将知识图谱数据转换为向量表示，支持节点和关系的向量化处理，为图谱数据的检索和相似度计算提供基础。
+本模块负责将知识图谱和文本块数据转换为向量表示，通过调用嵌入API服务生成密集向量，为向量数据库存储和语义检索提供支持。
 
 功能特性
 --------
 
-* **节点向量化**：将图谱节点转换为密集向量表示
-* **关系向量化**：将图谱关系转换为向量表示
-* **批量处理**：支持大规模图谱数据的批量向量化
-* **多模型支持**：支持不同的嵌入模型
-* **相似度计算**：提供向量相似度计算功能
+* **图谱向量化**：将图谱节点和关系转换为向量表示
+* **文本块向量化**：将文本分块转换为向量表示
+* **API调用封装**：统一封装OpenAI兼容的嵌入API调用
+* **批量处理**：支持大规模数据的批量向量化处理
+* **多线程并发**：利用多线程提高向量化效率
+* **文件分片管理**：自动管理大文件的分片写入
+* **容错机制**：完善的异常处理和重试逻辑
 
 核心函数
 --------
 
-graph_vectorize_nodes
-~~~~~~~~~~~~~~~~~~~~~
+embed_graph
+~~~~~~~~~~~
 
-对图谱节点进行向量化处理。
+对图谱结构（节点和关系）进行向量化处理。
 
-.. autofunction:: src.db_build.graph_db.graph_vector.graph_vectorize_nodes
+.. autofunction:: src.db_build.graph_db.graph_vector.embed_graph
 
-graph_vectorize_relations
-~~~~~~~~~~~~~~~~~~~~~~~~~
+embed_chunks
+~~~~~~~~~~~~
 
-对图谱关系进行向量化处理。
+对文本分块进行向量化处理。
 
-.. autofunction:: src.db_build.graph_db.graph_vector.graph_vectorize_relations
+.. autofunction:: src.db_build.graph_db.graph_vector.embed_chunks
 
-compute_similarity
-~~~~~~~~~~~~~~~~~~
+embedding
+~~~~~~~~~
 
-计算向量之间的相似度。
+调用嵌入API生成文本向量。
 
-.. autofunction:: src.db_build.graph_db.graph_vector.compute_similarity
+.. autofunction:: src.db_build.graph_db.graph_vector.embedding
 
 使用示例
 --------
 
-节点向量化
+图谱向量化
 ~~~~~~~~~~
 
 .. code-block:: python
 
-   from src.db_build.graph_db.graph_vector import graph_vectorize_nodes
+   from src.db_build.graph_db.graph_vector import embed_graph
 
-   # 节点数据
-   nodes = [
-       {"id": "node_1", "name": "人工智能", "description": "人工智能技术"},
-       {"id": "node_2", "name": "机器学习", "description": "机器学习算法"}
-   ]
+   # 图谱向量化
+   attr_count, triple_count = embed_graph(
+       api_key="your-api-key",
+       embedding_url="https://api.openai.com/v1",
+       embedding_model="text-embedding-ada-002",
+       embedding_timeout=30,
+       attr_input_path="/path/to/nodes.jsonl",
+       triples_input_path="/path/to/relations.jsonl",
+       output_dir="/path/to/output",
+       batch_size=2000,
+       max_file_size_bytes=3*1024*1024*1024,  # 3GB
+       num_threads=8
+   )
 
-   # 进行向量化
-   vectorized_nodes = graph_vectorize_nodes(nodes)
-
-关系向量化
-~~~~~~~~~~
-
-.. code-block:: python
-
-   from src.db_build.graph_db.graph_vector import graph_vectorize_relations
-
-   # 关系数据
-   relations = [
-       {"head": "node_1", "relation": "包含", "tail": "node_2"},
-       {"head": "node_2", "relation": "属于", "tail": "node_1"}
-   ]
-
-   # 进行向量化
-   vectorized_relations = graph_vectorize_relations(relations)
-
-相似度计算
-~~~~~~~~~~
+文本块向量化
+~~~~~~~~~~~~
 
 .. code-block:: python
 
-   from src.db_build.graph_db.graph_vector import compute_similarity
+   from src.db_build.graph_db.graph_vector import embed_chunks
 
-   # 计算两个向量之间的余弦相似度
-   similarity = compute_similarity(vector1, vector2)
+   # 文本块向量化
+   chunk_count = embed_chunks(
+       api_key="your-api-key",
+       embedding_url="https://api.openai.com/v1",
+       embedding_model="text-embedding-ada-002",
+       embedding_timeout=30,
+       chunks_file="/path/to/chunks.jsonl",
+       chunk_output_dir="/path/to/output",
+       batch_size=2000,
+       max_file_size_bytes=3*1024*1024*1024,  # 3GB
+       num_threads=8
+   )
+
+嵌入API调用
+~~~~~~~~~~~~
+
+.. code-block:: python
+
+   from src.db_build.graph_db.graph_vector import embedding
+   import numpy as np
+
+   # 批量获取文本嵌入向量
+   texts = ["人工智能技术", "机器学习算法", "深度学习模型"]
+   embeddings = embedding(
+       texts=texts,
+       api_key="your-api-key",
+       embedding_url="https://api.openai.com/v1",
+       embedding_model="text-embedding-ada-002",
+       embedding_timeout=30,
+       max_retries=5,
+       retry_delay=2
+   )
+
+   # embeddings 是 numpy 数组，形状为 (len(texts), embedding_dim)
 
 配置参数
 --------
@@ -93,47 +116,70 @@ compute_similarity
    * - 参数
      - 默认值
      - 说明
-   * - ``model_name``
+   * - ``api_key``
+     - 必需参数
+     - 嵌入API的访问密钥
+   * - ``embedding_url``
+     - ``https://api.openai.com/v1``
+     - 嵌入API的基础URL
+   * - ``embedding_model``
      - ``text-embedding-ada-002``
      - 嵌入模型名称
+   * - ``embedding_timeout``
+     - ``30``
+     - API请求超时时间（秒）
    * - ``batch_size``
-     - ``32``
-     - 批量处理大小
-   * - ``max_length``
-     - ``512``
-     - 文本最大长度
-   * - ``normalize``
-     - ``true``
-     - 是否对向量进行L2归一化
+     - ``2000``
+     - 批量处理大小，减少API调用次数
+   * - ``max_file_size_bytes``
+     - ``3 GiB``
+     - 输出文件的最大大小，超限后自动分片
+   * - ``num_threads``
+     - ``8``
+     - 并行处理的线程数量
+   * - ``max_retries``
+     - ``5``
+     - API调用失败时的最大重试次数
+   * - ``retry_delay``
+     - ``2``
+     - 重试间隔时间（秒）
 
 性能优化
 --------
 
-* **GPU加速**：支持CUDA加速的向量计算
-* **内存优化**：分批处理避免内存溢出
-* **缓存机制**：对重复文本进行缓存避免重复计算
-* **并行处理**：支持多线程并行向量化
+* **多线程并发**：通过线程池实现并发API调用，提高处理效率
+* **批量处理**：将多个文本批量发送到API，减少网络往返次数
+* **文件分片**：自动将大文件分割成多个小文件，避免单个文件过大
+* **内存管理**：控制队列大小和批处理大小，避免内存溢出
+* **容错重试**：自动重试失败的API调用，确保处理稳定性
+* **进度监控**：实时显示处理进度和统计信息
 
 错误处理
 --------
 
-* **模型加载失败**：自动降级到CPU模式
-* **API限流**：自动重试和限流处理
-* **数据格式错误**：详细的输入验证和错误提示
-* **网络异常**：连接超时和重试机制
+* **API连接失败**：在开始处理前测试API连接可用性
+* **请求超时**：可配置的超时时间，自动处理网络延迟
+* **API限流**：指数退避重试策略，自动处理速率限制
+* **网络异常**：完整的异常捕获和错误日志记录
+* **数据格式错误**：跳过格式错误的记录，继续处理其他数据
+* **批量失败**：返回零向量作为失败请求的替代方案
 
 依赖项
 ------
 
-* **transformers**：HuggingFace模型加载
-* **torch**：PyTorch深度学习框架
-* **numpy**：数值计算
-* **faiss**：相似度搜索（可选）
+* **openai**：OpenAI API客户端，用于调用嵌入服务
+* **numpy**：数值计算和向量处理
+* **tqdm**：进度条显示
+* **threading**：多线程并发处理
+* **queue**：线程安全的任务队列
+* **pathlib**：路径处理
+* **json**：JSON数据处理
 
 应用场景
 --------
 
-1. **图谱检索**：基于向量相似度的图谱节点检索
-2. **关系发现**：发现图谱中的相似关系模式
-3. **聚类分析**：对图谱节点进行聚类分析
-4. **推荐系统**：基于图谱向量的智能推荐
+1. **知识库向量化**：将图谱节点和关系转换为向量表示，便于存储到向量数据库
+2. **文本检索预处理**：对文档分块进行向量化，为语义搜索做准备
+3. **大规模数据处理**：支持海量图谱和文本数据的批量向量化处理
+4. **API集成**：通过标准化的API接口集成到现有系统中
+5. **离线处理**：支持离线批量处理，减少在线服务的计算压力

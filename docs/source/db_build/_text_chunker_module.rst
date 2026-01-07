@@ -186,7 +186,7 @@ rechunk_by_source
 
 .. list-table::
    :header-rows: 1
-   :widths: 20 30 50
+   :widths: 25 20 20 35
 
    * - 场景
      - chunk_size

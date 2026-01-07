@@ -55,13 +55,6 @@ Contents
 
 .. toctree::
    :maxdepth: 2
-   :caption: 自动化脚本
-   :name: scripts
-
-   scripts/scripts.rst
-
-.. toctree::
-   :maxdepth: 2
    :caption: API控制器
    :name: controllers
 
@@ -87,9 +80,8 @@ Contents
 .. toctree::
    :maxdepth: 2
    :caption: 数据库集成
-   :name: db_build
 
-   db_build/db_build.rst
+   db_build/_db_build.rst
    db_build/_data_processing_pipeline.rst
    db_build/_text_chunker_module.rst
    db_build/_chunks_merge_module.rst
@@ -98,7 +90,6 @@ Contents
    db_build/_rel_dedup_merge_module.rst
    db_build/_merge_mappings_module.rst
    db_build/_graph_vector_module.rst
-   db_build/_kg_prompt_module.rst
    db_build/_vector_db_module.rst
    db_build/_vector_text_chunker_module.rst
    db_build/_sql_db_module.rst

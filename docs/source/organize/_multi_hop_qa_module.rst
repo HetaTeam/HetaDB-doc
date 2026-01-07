@@ -46,17 +46,17 @@
       └── Stage 2：判断信息是否充分 → 是 → 生成 Final Answer
 
 工具：KnowledgeQueryTool
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: src.organize.multi_hop_qa.KnowledgeQueryTool
    :members:
    :undoc-members:
 
-**功能**：将知识库查询封装为 LLM 可调用的工具。
+**功能** ：将知识库查询封装为 LLM 可调用的工具。
 
-**输入参数**（JSON 或字符串）：
+**输入参数** （JSON 或字符串）：
 
-- ``query``（必填）：自然语言问题；
+- ``query`` （必填）：自然语言问题；
 - ``top_k``、``kb_id``、``user_id`` 等（可选）：透传给 ``perform_knowledge_query``。
 
 **输出格式**：
@@ -70,7 +70,7 @@
    1. score=0.95 | content=...
    2. score=0.88 | content=...
 
-> **设计亮点**：自动处理异步调用（通过线程 + asyncio），兼容同步 LLM 框架（Qwen-Agent）。
+**设计亮点**：自动处理异步调用（通过线程 + asyncio），兼容同步 LLM 框架（Qwen-Agent）。
 
 代理：HAgent
 ------------
@@ -90,19 +90,23 @@
 提示词设计
 ----------
 
-1. **主代理提示（SYSTEM_EXPLORER）**  
+1. **主代理提示（SYSTEM_EXPLORER）**
+
    强制使用 ReAct 格式，要求每步必须执行动作，禁止拒绝。
 
-2. **信息提炼提示（STSTEM_CRITIIC_INFORMATION）**  
+2. **信息提炼提示（STSTEM_CRITIIC_INFORMATION）**
+
    要求模型判断观察结果是否对问题有用，并提取相关信息（JSON 格式）。
 
-3. **答案判断提示（STSTEM_CRITIIC_ANSWER）**  
+3. **答案判断提示（STSTEM_CRITIIC_ANSWER）**
+
    要求模型判断累积信息是否足以回答问题，若是则生成最终答案（JSON 格式）。
 
 使用示例
 --------
 
-### API 调用
+API 调用
+~~~~~~~~
 
 .. code-block:: python
 
@@ -117,7 +121,8 @@
    )
    final_answer = trace[-1].get("answer", "无法回答")
 
-### 在 FastAPI 中集成
+在 FastAPI 中集成
+~~~~~~~~~~~~~~~~~~
 
 已在 ``/api/knowledge/query?mode=2`` 中集成，前端只需指定 ``mode=2``。
 
@@ -135,7 +140,7 @@
        base_url: "http://10.140.37.71:8001/v1"
        timeout: 120  # 秒
 
-> **注意**：超时值设为 ``null`` 表示无限制（YAML 中写为 ``timeout:``）。
+**注意**：超时值设为 ``null`` 表示无限制（YAML 中写为 ``timeout:``）。
 
 推理流程详解
 ------------

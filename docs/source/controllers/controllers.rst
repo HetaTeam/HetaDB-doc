@@ -42,8 +42,12 @@ HetaDB的API控制器模块提供了完整的RESTful API接口，支持知识库
 .. code-block:: json
 
    {
-     "参数名": "参数值",
-     "参数名2": "参数值2"
+     "query": "项目的技术架构是什么？",
+     "kb_id": "tech_docs",
+     "user_id": "user123",
+     "top_k": 5,
+     "max_results": 20,
+     "mode": 0
    }
 
 成功响应格式
@@ -53,13 +57,27 @@ HetaDB的API控制器模块提供了完整的RESTful API接口，支持知识库
 
    {
      "success": true,
-     "message": "操作成功",
-     "data": {...},
-     "total_count": 0,
-     "request_id": "uuid",
+     "message": "查询成功",
+     "data": [
+       {
+         "kb_id": "tech_docs",
+         "kb_name": "技术文档库",
+         "score": 0.85,
+         "content": "项目采用微服务架构，使用Spring Boot框架...",
+         "text": "项目采用微服务架构，使用Spring Boot框架...",
+         "source_id": ["chunk_001", "chunk_002"]
+       }
+     ],
+     "total_count": 1,
+     "request_id": "req_abc123def456",
      "code": 200,
-     "query_info": {...},
-     "response": "..."
+     "query_info": {
+       "query": "项目的技术架构是什么？",
+       "mode": 0,
+       "processing_time": 1.2,
+       "total_chunks_searched": 1500
+     },
+     "response": "根据技术文档，项目采用微服务架构，主要使用Spring Boot框架开发。"
    }
 
 错误响应格式
@@ -69,12 +87,15 @@ HetaDB的API控制器模块提供了完整的RESTful API接口，支持知识库
 
    {
      "success": false,
-     "message": "错误描述",
+     "message": "查询参数无效：query字段不能为空",
      "data": [],
      "total_count": 0,
-     "request_id": "uuid",
+     "request_id": "req_err_789xyz",
      "code": 400,
-     "query_info": {},
+     "query_info": {
+       "error_type": "ValidationError",
+       "timestamp": "2024-01-15T10:30:00Z"
+     },
      "response": null
    }
 

@@ -55,7 +55,7 @@ merge_mappings_adaptive
 映射文件格式
 ~~~~~~~~~~~~
 
-.. code-block:: json
+.. code-block:: text
 
    {
      "old_node_id_1": "new_node_id_1",

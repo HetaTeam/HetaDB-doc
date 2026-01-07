@@ -109,7 +109,7 @@ LLM Prompt 设计
    路径：``csv_out/table_<stem>_page_<idx>.csv``  
    内容：原始表格数据（不含索引）。
 
-2. **描述 JSON 文件**（符合 ``UnifiedDoc``）  
+2. **描述 JSON 文件** （符合 ``UnifiedDoc``）  
    路径：``jsonls_dir/table_<stem>_page_<idx>.json``  
    内容示例：
 
