@@ -8,9 +8,9 @@
 1. **原始图像文件** （如 ``.jpg``, ``.png``）；
 2. **从 JSONL 文档中提取的图像** （如 PDF/HTML 解析产物）。
 
-所有结果统一输出为符合 ``UnifiedDoc`` 规范的 JSON 文件，并最终合并为滚动式 JSONL。
+- 所有结果统一输出为符合 ``UnifiedDoc`` 规范的 JSON 文件，并最终合并为滚动式 JSONL。
 
-核心目标：为每张图像生成高质量、可检索的语义描述，用于知识库构建或图谱关联。
+- 核心目标：为每张图像生成高质量、可检索的语义描述，用于知识库构建或图谱关联。
 
 功能特点
 --------
@@ -169,14 +169,17 @@ VLM Prompt 设计
 ------
 
 - **Python 包**：
-  - ``Pillow``（图像验证）
-  - ``openai``（示例 VLM 客户端，实际可替换）
-  - ``tqdm``（进度条）
-  - ``loguru`` / ``logging``（日志）
-  - ``pyyaml``（可能用于配置加载）
+
+  - ``Pillow`` （图像验证）
+  - ``openai`` （示例 VLM 客户端，实际可替换）
+  - ``tqdm`` （进度条）
+  - ``loguru`` / ``logging`` （日志）
+  - ``pyyaml`` （可能用于配置加载）
+  
 - **内部模块**：
-  - ``src.file_parsing.convert_to_unified``（统一数据结构）
-  - ``src.file_parsing.unified_output.process_middle_files``（结果合并）
+
+  - ``src.file_parsing.convert_to_unified`` （统一数据结构）
+  - ``src.file_parsing.unified_output.process_middle_files`` （结果合并）
 
 注意事项
 --------
@@ -186,5 +189,3 @@ VLM Prompt 设计
 - **临时目录**：``image_parser_temp_output/`` 在合并后自动删除；
 - **无效图像跳过**：损坏或非图像文件会被静默跳过；
 - **输出粒度**：每张图像独立输出，便于后续按需加载或嵌入。
-
-> **提示**：若需断点续处理，可将 ``image_parsed_set`` 持久化（当前代码注释中保留了从文件加载的接口）。

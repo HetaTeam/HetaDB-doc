@@ -68,12 +68,12 @@ Contents
    :name: file_parsing
 
    file_parsing/_parser_assignment_module.rst
-   file_parsing/_unified_output_module.rst
    file_parsing/_text_parser_module.rst
    file_parsing/_doc_parser_module.rst
    file_parsing/_html_parser_module.rst
    file_parsing/_image_parser_module.rst
    file_parsing/_sheet_parser_module.rst
+   file_parsing/_unified_output_module.rst
 
 
 .. toctree::

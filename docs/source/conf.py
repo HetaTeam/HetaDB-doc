@@ -142,15 +142,15 @@ html_static_path = ['_static']
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar
-html_logo = '_static/hrag.png'
+# html_logo = '_static/hrag.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large
-html_favicon = '_static/favicon.ico'
+# html_favicon = '_static/favicon.ico'
 
 # Output file base name for HTML help builder
-htmlhelp_basename = 'HetaDBGdoc'
+htmlhelp_basename = 'HetaDBdoc'
 
 # -- Options for LaTeX output ------------------------------------------------
 latex_elements = {
@@ -169,7 +169,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class])
 latex_documents = [
     (master_doc, 'HetaDB.tex', 'HetaDB Documentation',
-     'Guohang Yan, Pinlong Cai, Ding Wang, Song Mao', 'manual'),
+     'HetaKnowledge Team', 'manual'),
 ]
 
 # -- Options for manual page output ------------------------------------------
@@ -184,11 +184,11 @@ man_pages = [
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
-texinfo_documents = [
-    (master_doc, 'HetaDB', 'HetaDB Documentation',
-     author, 'HetaDB', 'Hybrid Retrieval-Augmented Generation System',
-     'Miscellaneous'),
-]
+# texinfo_documents = [
+#     (master_doc, 'HetaDB', 'HetaDB Documentation',
+#      author, 'HetaDB', 'Hybrid Retrieval-Augmented Generation System',
+#      'Miscellaneous'),
+# ]
 
 # -- Options for Epub output -------------------------------------------------
 # Bibliographic Dublin Core info

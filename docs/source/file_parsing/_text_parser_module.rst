@@ -1,6 +1,6 @@
 .. _text_parser_module:
 
-纯文本解析模块
+纯文本文件解析模块
 ===========================
 
 本模块用于将一批纯文本文件（如 ``.txt``、``.md`` 等）转换为统一的结构化中间格式（``UnifiedDoc``），并最终合并输出为标准化的 JSONL 文件。
@@ -91,6 +91,7 @@
 ------
 
 - ``src.file_parsing.convert_to_unified`` 中的以下组件：
+
   - ``MetaDict``、``TextElement``、``UnifiedDoc`` （类型定义）
   - ``_now_iso()`` （生成 ISO 时间戳）
   - ``load_hash_mapping()`` （加载哈希映射）

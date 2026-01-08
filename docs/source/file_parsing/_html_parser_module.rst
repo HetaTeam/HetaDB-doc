@@ -12,7 +12,7 @@ HTML 批量解析模块
 --------
 
 - **通用 HTML 解析**：适用于网页快照、爬虫保存的 HTML 文件等场景；
-- **多源图像提取**：支持 ``<img>``、``<source>``、``og:image``、CSS ``background-image``、``<video poster>`` 等；
+- **多源图像提取**：支持 ``<img>``、``<source>``、``og:image``、``background-image``、``<video poster>`` 等；
 - **噪声过滤**：自动移除 ``<script>``、``<style>``、``<nav>``、``<footer>`` 等非主要内容标签；
 - **元数据提取**：自动获取 ``<title>`` 和 ``<meta name="description">`` 或 ``og:description``；
 - **图像去重与过滤**：通过可选的图像哈希白名单控制图像保留；
@@ -135,11 +135,14 @@ HTML 批量解析模块
 ------
 
 - **Python 包**：
-  - ``beautifulsoup4``（HTML 解析）
-  - ``loguru``（日志，间接依赖）
+
+  - ``beautifulsoup4`` （HTML 解析）
+  - ``loguru`` （日志，间接依赖）
+  
 - **内部模块**：
-  - ``src.file_parsing.convert_to_unified``（统一数据结构）
-  - ``src.file_parsing.unified_output.process_middle_files``（结果合并）
+
+  - ``src.file_parsing.convert_to_unified`` （统一数据结构）
+  - ``src.file_parsing.unified_output.process_middle_files`` （结果合并）
 
 注意事项
 --------
