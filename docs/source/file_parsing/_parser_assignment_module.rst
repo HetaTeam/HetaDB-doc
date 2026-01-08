@@ -5,7 +5,7 @@
 
 ``ParserAssignment`` 类提供了一套端到端的原始文件处理流程，主要包括以下步骤：
 
-1. **哈希重命名**：使用 SHA256 对原始文件进行重命名，确保文件名唯一且可复现。
+1. **哈希重命名**：使用 SHA256 对原始文件进行重命名，确保文件名唯一且可追溯。
 2. **智能解析**：根据文件后缀自动选择合适的解析器进行批量解析。
 3. **结构化输出**：将解析结果（文本/图像描述为 JSONL，表格为 CSV）组织到清晰的子目录中。
 
@@ -30,22 +30,9 @@
    pa.step1_assignment()
    pa.step2_batch_parse(llm=my_llm_client, vlm=my_vlm_client)
 
-类参考
-------
 
-.. autoclass:: src.file_parsing.parser_assignment.ParserAssignment
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-   .. automethod:: src.file_parsing.parser_assignment.ParserAssignment.__init__
-   .. automethod:: src.file_parsing.parser_assignment.ParserAssignment.cleanup
-   .. automethod:: src.file_parsing.parser_assignment.ParserAssignment.step1_assignment
-   .. automethod:: src.file_parsing.parser_assignment.ParserAssignment.extract_archive
-   .. automethod:: src.file_parsing.parser_assignment.ParserAssignment.step2_batch_parse
-
-构造函数参数
-~~~~~~~~~~~~
+类初始化参数
+----------
 
 ``data_dir`` : str  
    项目根目录路径（例如：``"data"``）。
@@ -67,10 +54,10 @@
 ``config_supported_ext`` : str 或 set，可选  
    - 若为 ``"default"``，则启用所有内置支持的文件扩展名；
    - 若为 ``set``，则仅处理指定的扩展名（是否带点均可）。  
-     示例：``{".pdf", "txt", "jpg"}`` 会被标准化为 ``{".pdf", ".txt", ".jpg"}``。
+     示例：``{"pdf", "txt", "jpg"}`` 会被标准化为 ``{".pdf", ".txt", ".jpg"}``。
 
 生成的输出目录
-~~~~~~~~~~~~~~
+------------
 
 初始化后，以下子目录会自动创建于 ``parsed_dir`` 下：
 
@@ -82,42 +69,31 @@
 - ``table_desc_out/``：由大语言模型（LLM）生成的表格语义摘要（JSONL）。
 
 方法说明
-~~~~~~~~
+-------
 
 ``cleanup()``  
    删除已存在的 ``parsed_dir`` 目录，确保输出干净。
 
 ``step1_assignment()``  
-   - 自动检测并解压归档文件（支持 ``.zip``, ``.7z``, ``.rar``, ``.tar*`` 等格式）；
+   - 通过``extract_archive()``自动检测并解压归档文件（支持 ``.zip``, ``.7z``, ``.rar``, ``.tar*`` 等格式）；
    - 根据扩展名和支持规则过滤文件；
    - 使用 SHA256 对文件重命名，并生成 ``mapping.json`` 映射文件，记录原始文件名与哈希文件名的对应关系。
-
-``extract_archive(filepath)``  
-   原地解压单个归档文件。支持的格式包括：
-   - ZIP（通过 ``zipfile``）
-   - 7z（通过 ``py7zr``）
-   - RAR（通过 ``rarfile``）
-   - TAR（包括 ``.tar.gz``, ``.tar.xz``, ``.tar.bz2`` 等压缩变体）
 
 ``step2_batch_parse(llm, vlm)``  
    并行执行各类文件的批量解析：
 
-   - **文本文件** （如 ``.txt``, ``.md``）：使用 ``text_parser.parse()`` → 输出 JSONL；
-   - **文档文件** （如 ``.pdf``, ``.docx``, ``.pptx``）：使用 ``doc_parser.batch_parse()`` → 提取文本与内嵌图像；
-   - **HTML 文件**：使用 ``html_parser.parse()`` → 输出 JSONL；
-   - **图像文件** （原始图像 + 文档中提取的图像）：通过 ``image_parser.create_description()`` 调用 VLM 生成描述（异步）；
-   - **电子表格** （如 ``.csv``, ``.xlsx``）：转换为 CSV，并调用 LLM 生成表格语义摘要（异步）。
+   - **文本文件** （如 ``.txt``, ``.md``）：使用 ``text_parser.parse()``，提取文本 → 输出JSONL；
+   - **文档文件** （如 ``.pdf``, ``.docx``, ``.pptx``）：使用 ``doc_parser.batch_parse()``，提取文本与内嵌图像 → 输出JSONL；
+   - **HTML 文件**：使用 ``html_parser.parse()``，解析网页中的文字、图片、表格等信息 → 输出JSONL；
+   - **图像文件** （原始图像 + 文档中提取的图像）：通过 ``image_parser.create_description()`` 调用 VLM 生成描述 → 输出JSONL；
+   - **电子表格** （如 ``.csv``, ``.xlsx``）：读取表格内容，调用 LLM 生成表格语义摘要 →  输出JSONL和表格内容CSV。
 
-   .. note::
-      需传入有效的 LLM 和 VLM 客户端对象（例如来自 OpenAI、Anthropic 或本地推理服务）。
 
 主函数
 ------
 
-.. autofunction:: src.file_parsing.parser_assignment.main
-
-.. note::
-   ``main()`` 函数使用默认参数实例化 ``ParserAssignment``，适用于脚本或命令行调用。实际使用中，建议根据需求传入自定义路径和模型客户端。
+``src.file_parsing.parser_assignment.main`` : 主函数
+    建议根据需求传入自定义路径和模型客户端, 可使用商用API服务或本地部署模型自建API服务）。
 
 支持的文件扩展名
 ----------------
@@ -138,6 +114,7 @@
 - ``py7zr``
 - ``rarfile``
 - 自定义模块（位于 ``src.file_parsing`` 下）：
+
   - ``html_parser``
   - ``image_parser``
   - ``doc_parser``
